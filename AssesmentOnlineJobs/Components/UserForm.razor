@@ -1,0 +1,61 @@
+﻿@rendermode InteractiveServer
+@using AssesmentOnlineJobs.Model
+@using Microsoft.AspNetCore.Components.Forms
+
+@if (userModel != null)
+{
+   <EditForm method="POST" Model="@userModel" OnValidSubmit="OnSubmit" FormName="UserRegistrationForm">
+        <AntiforgeryToken /> @* ADD THIS LINE *@
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <InputText @bind-Value="userModel.Name" class="form-control" />
+            <ValidationMessage For="() => userModel.Name" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            <InputText @bind-Value="userModel.Address" class="form-control" />
+            <ValidationMessage For="() => userModel.Address" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Age (Must be 18+)</label>
+            <InputNumber @bind-Value="userModel.Age" class="form-control" />
+            <ValidationMessage For="() => userModel.Age" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <InputText @bind-Value="userModel.Email" class="form-control" />
+            <ValidationMessage For="() => userModel.Email" class="text-danger" />
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+                @(IsSubmitting ? "Saving..." : "Submit")
+            </button>
+        </div>
+    </EditForm>
+}
+else
+{
+    <p>Loading form...</p>
+}
+
+@code {
+    [Parameter] 
+    public UserFormModel userModel { get; set; } = default!;
+
+    [Parameter] 
+    public bool IsSubmitting { get; set; }
+
+    [Parameter] 
+    public EventCallback<UserFormModel> OnValidSubmit { get; set; }
+
+    private async Task OnSubmit()
+    {
+        Console.WriteLine(userModel.Name);
+        await OnValidSubmit.InvokeAsync(userModel);
+    }
+}

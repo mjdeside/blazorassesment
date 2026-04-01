@@ -1,0 +1,83 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using AssesmentOnlineJobs.Model
+@using AssesmentOnlineJobs.Components
+
+<PageTitle>User Form Sample</PageTitle>
+
+<div class="container mt-4">
+    <h3>User Registration</h3>
+
+    <UserForm userModel="@user"
+    IsSubmitting="@isSubmitting"
+    OnValidSubmit="@HandleUserFormSubmit"
+    />
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success mt-3">@successMessage</div>
+    }
+
+    @if (users.Any())
+    {
+        <h4 class="mt-5">Registered Users</h4>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in users)
+                {
+                    <tr>
+                        <td>@u.Name</td>
+                        <td>@u.Address</td>
+                        <td>@u.Age</td>
+                        <td>@u.Email</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private UserFormModel user { get; set; } = new();
+    private List<UserFormModel> users = new();
+    private bool isSubmitting = false;
+    private string successMessage = "";
+
+    private async Task HandleUserFormSubmit(UserFormModel submittedUser)
+    {
+        isSubmitting = true;
+        successMessage = "";
+
+        await Task.Delay(1500);
+
+        var userExist = users.Any(e => e.Name == submittedUser.Name);
+
+        if(!userExist){
+            users.Add(new UserFormModel
+                {
+                    Name = submittedUser.Name,
+                    Address = submittedUser.Address,
+                    Age = submittedUser.Age,
+                    Email = submittedUser.Email
+                });
+
+            successMessage = $"User {submittedUser.Name} (Age: {submittedUser.Age}) saved successfully!";
+            user = new();
+        }
+        else{
+            successMessage = $"User {submittedUser.Name} already exist";
+        }
+      
+        isSubmitting = false;
+    }
+
+
+}
